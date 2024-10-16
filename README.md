@@ -31,7 +31,7 @@ If you use our resource, please cite our work with the bibtex listed below:
 * `src`: codes for evaluating the factualtiy of LM generation (For files adapted from other publicly available codebases, we included the pointer to the original code file)
 
 ## 1. Setup 
-1. Install dependencies by running `conda env create -f environment.yml` (or use `mamba`)
+1. Install dependencies by running `conda env create -f environment.yml` (or use `mamba`) \
     For installation on windows (fix encoding issues; most likely not necessary on Linux/Mac):
     The pip installation of fever-drqa does not work out of the box. There are encoding issues. Therefore, you can do the following:
     ```bash
