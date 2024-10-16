@@ -17,7 +17,7 @@ import importlib.util
 from multiprocessing import Pool as ProcessPool
 from tqdm import tqdm
 from drqa.retriever import utils
-from common.util.log_helper import LogHelper
+from src.common.util.log_helper import LogHelper
 
 LogHelper.setup()
 logger = LogHelper.get_logger("DrQA BuildDB")

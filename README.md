@@ -1,3 +1,6 @@
+> Note: This is a fork of the [original FactualityPrompt repo](https://github.com/nayeon7lee/FactualityPrompt.git). It contains updated instructions in the README files and some fixes for imports, environments and should now also work on Windows (tested on Windows and Linux).
+> ⚠️ This repo will not be maintained long term by the repo maintainer.
+
 # FactualityPrompt
 ![License: Apache](https://img.shields.io/badge/License-Apache2.0-yellow.svg) 
   
@@ -28,21 +31,73 @@ If you use our resource, please cite our work with the bibtex listed below:
 * `src`: codes for evaluating the factualtiy of LM generation (For files adapted from other publicly available codebases, we included the pointer to the original code file)
 
 ## 1. Setup 
-1. Install dependencies by running `pip install -r requirements.txt`
-2. Download Wikipedia processed dump (knowledgesource.json) from [KILT-github](https://github.com/facebookresearch/KILT#kilt-knowledge-source) into `data` directory (Refer to their repository for citation details)
-```bash
-  mkdir data
-  cd data
-  wget http://dl.fbaipublicfiles.com/KILT/kilt_knowledgesource.json
-```
-3. Create the DB file from Wikipedia dump by running:
+1. Install dependencies by running `conda env create -f environment.yml` (or use `mamba`)
+    For installation on windows (fix encoding issues; most likely not necessary on Linux/Mac):
+    The pip installation of fever-drqa does not work out of the box. There are encoding issues. Therefore, you can do the following:
+    ```bash
+    # download
+    pip download fever-drqa # or download directly from: https://pypi.org/project/fever-drqa/#files
+    # extract
+    tar -xvf fever-drqa-VERSION.tar.gz # where VERSION is the version you downloaded
+    cd fever-drqa-VERSION
+    ```
+    In the extracted folder, you need to change `setup.py`:
+    ```diff
+    - with open('README.md') as f:
+    + with open('README.md', encoding="utf-8") as f:
+        readme = f.read()
 
-```bash
-  PYTHONPATH=fever_athene python3 fever_athene/scripts/build_db_kilt.py data/knowledgesource.json data/kilt_db.db
-```
-This script will create kilt_db.db into `data` directory. 
+    - with open('LICENSE') as f:
+    + with open('LICENSE', encoding="utf-8") as f:
+        license = f.read()
 
-4. Configure `src/const.py` file. 
+    - with open('requirements.txt') as f:
+    + with open('requirements.txt', encoding="utf-8") as f:
+        reqs = f.read()
+    ```
+    and also the `drqa/__init__.py` file:
+    ```diff
+    - from pathlib import PosixPath
+    + from pathlib import Path
+
+    # ...
+
+    DATA_DIR = (
+        os.getenv('DRQA_DATA') or
+    -    os.path.join(PosixPath(__file__).absolute().parents[1].as_posix(), 'data')
+    +    os.path.join(Path(__file__).absolute().parents[1], 'data')
+    )
+    ```
+
+    Then, install it with pip:
+    ```bash
+    pip install .
+    ```
+    and clean up the files:
+    ```bash
+    # upon successful install, clean up the files
+    cd ..
+    rm -rf fever-drqa-VERSION
+    rm -rf fever-drqa-VERSION.tar.gz
+    ```
+2. Download necessary models
+    ```bash
+    python -m spacy download en_core_web_sm
+    ```
+3. Download Wikipedia processed dump (`kilt_knowledgesource.json`) from [KILT-github](https://github.com/facebookresearch/KILT#kilt-knowledge-source) into `data` directory (Refer to their repository for citation details)
+    ```bash
+    mkdir data
+    cd data
+    wget http://dl.fbaipublicfiles.com/KILT/kilt_knowledgesource.json
+    ```
+4. Create the DB file from Wikipedia dump by running:
+
+    ```bash
+    PYTHONPATH=fever_athene python3 fever_athene/src/scripts/build_db_kilt.py data/kilt_knowledgesource.json data/kilt_db.db
+    ```
+    This script will create `kilt_db.db` into `data` directory. 
+
+5. Configure `src/const.py` file. 
 
 ## 2. Run evaluation script
 Running any of the scripts below will save corresponding metric results into a file named `$GEN_TO_EVALUATE_NAME_results.jsonl` (`$GEN_TO_EVALUATE_NAME` refers to the file containing generations that you are trying to evaluate).
@@ -72,12 +127,12 @@ done
 1. First obtain multiple generation files from your LM with different seed. In our paper, we used 10 random seeds, but you can use your own choice of seed count. **If you are evaluating greedy, there is NO NEED to generate multiple seed, because all seed will result in same generation. Simply use 1 generation file.**
 
 2. Then run the below script:
-```bash
-GEN_DIR=directory-containing-multi-seed-generation-files
+    ```bash
+    GEN_DIR=directory-containing-multi-seed-generation-files
 
-FILE_TEMPLATE=shared-string-between-multiple-seed-generation
-python src/distinct_n.py --gen_dir ${GEN_DIR} --file_template ${FILE_TEMPLATE} --number_of_seeds 10
-```
+    FILE_TEMPLATE=shared-string-between-multiple-seed-generation
+    python src/distinct_n.py --gen_dir ${GEN_DIR} --file_template ${FILE_TEMPLATE} --number_of_seeds 10
+    ```
 
 Illustration of `FILE_TEMPLATE`:
 * Let's assume your generation files are named as follows: factual_gen_seed1.jsonl, nonfactual_gen_seed1.jsonl, factual_gen_seed2.jsonl, nonfactual_gen_seed2.jsonl,...

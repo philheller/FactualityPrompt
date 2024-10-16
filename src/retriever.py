@@ -23,7 +23,7 @@ import torch
 import torch.nn.functional as F
 
 from src.const import DATA_DIR, HOME_DIR
-# from fever_athene.src.retrieval.fever_doc_db import FeverDocDB
+from fever_athene.src.retrieval.fever_doc_db import FeverDocDB
 
 #Mean Pooling - Take attention mask into account for correct averaging
 def mean_pooling(model_output, attention_mask):
@@ -236,7 +236,8 @@ def obtain_relevant_infobox(claim, infobox_candidates, k):
 
     return k_infobox_items
 
-DB = FeverDocDB(path = "{}/data/kilt_db.db".format(HOME_DIR))
+db_path = join(HOME_DIR, join('data', 'kilt_db.db'))
+DB = FeverDocDB(path = db_path)
 def get_wiki_from_db(wiki_names):
     
     all_lines = []
