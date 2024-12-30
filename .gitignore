@@ -1,4 +1,4 @@
 data/*
 __pycache__
-prompts/*
+prompts/*/
 src/const.py

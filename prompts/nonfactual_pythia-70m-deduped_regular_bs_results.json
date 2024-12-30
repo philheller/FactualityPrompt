@@ -1,0 +1,10 @@
+{
+    "avg_hallu_ner_ratio": 0.5540389358703313,
+    "nli_contradict_class_ratio": 0.25,
+    "nli_neutral_class_ratio": 0.1875,
+    "nli_entail_class_ratio": 0.5625,
+    "no_fact_ratio": 0.72,
+    "has_fact_ratio": 0.16,
+    "off_topic_ratio": 0.12,
+    "raw": "NO_FACT: 72.00%, HAS_FACT: 16.00%, OFFTOPIC: 12.00% Hallu NER: 55.40% | Strict True NER: 18.75% AVG PROBS: Contradict: 31.68%, Neutral: 30.90%, Entail: 37.42% NLI CLASS %: Contradict: 25.00%, Neutral: 18.75%, Entail: 56.25% yay!"
+}
